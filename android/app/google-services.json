@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988408431677",
+    "project_id": "tezpost-app",
+    "storage_bucket": "tezpost-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988408431677:android:1813ec35911e30dce0d654",
+        "android_client_info": {
+          "package_name": "tj.iskoa.tezpost_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn3pbePUQno-38h5cLVA0qoqWnR26msog"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
