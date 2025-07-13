@@ -12,6 +12,7 @@ class OrderResult extends StatelessWidget {
       selector: (_, c) => (c.isOrderLoading, c.hasSearched, c.order),
       builder: (_, tuple, __) {
         final (isLoading, hasSearched, order) = tuple;
+        final colorScheme = Theme.of(context).colorScheme;
 
         if (isLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -28,10 +29,10 @@ class OrderResult extends StatelessWidget {
         return Center(
           child: Text(
             text,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.8),
+            ),
           ),
         );
       },

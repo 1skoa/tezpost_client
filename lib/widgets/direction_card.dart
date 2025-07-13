@@ -1,152 +1,147 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:tezpost_client/controllers/home_controller.dart';
 import 'package:tezpost_client/widgets/address_card_widget.dart';
 import 'package:tezpost_client/widgets/price_card_widget.dart';
 
-class DirectionCard extends StatelessWidget {
+class DirectionCard extends StatefulWidget {
   final int directionId;
   final String directionName;
+  final bool isSelected;
   final bool isDark;
+  final List<dynamic> prices;
+  final List<dynamic> addresses;
 
   const DirectionCard({
     super.key,
     required this.directionId,
     required this.directionName,
-    required this.isDark, required bool isSelected,
+    required this.isSelected,
+    required this.isDark,
+    required this.prices,
+    required this.addresses,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final bgColor = isDark ? const Color(0xFF49362A) : const Color(0xFFFFD2B4);
-    final borderColor =
-    isDark ? Colors.grey.shade700 : Colors.grey.withOpacity(0.1);
-    final iconColor = isDark ? Colors.orange.shade300 : Colors.orange;
-    final addressIconColor =
-    isDark ? Colors.blueGrey.shade300 : Colors.blueGrey;
+  _DirectionCardState createState() => _DirectionCardState();
+}
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: bgColor.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+class _DirectionCardState extends State<DirectionCard> {
+  bool _addressesExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = widget.isDark ? Colors.deepOrange.shade300 : Colors.deepOrange;
+    final secondaryTextColor = widget.isDark ? Colors.white54 : Colors.black54;
+    final bgColor = widget.isDark ? Colors.grey[850] : Colors.white;
+
+    final borderColor = _addressesExpanded ? primaryColor : Colors.grey.shade300;
+    final borderWidth = _addressesExpanded ? 2.0 : 1.0;
+
+    final boxShadow = [
+      BoxShadow(
+        color: widget.isDark
+            ? (_addressesExpanded ? primaryColor.withOpacity(0.4) : Colors.black45)
+            : (_addressesExpanded ? primaryColor.withOpacity(0.3) : Colors.grey.withOpacity(0.1)),
+        blurRadius: _addressesExpanded ? 12 : 6,
+        offset: const Offset(0, 4),
+      ),
+    ];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor, width: borderWidth),
+        boxShadow: boxShadow,
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // LEFT CONTENT
-            Expanded(
-              child: Column(
+            // Заголовок с иконкой слева
+            Row(
+              children: [
+                Icon(Icons.place_outlined, color: primaryColor, size: 24),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.directionName,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            if (widget.prices.isNotEmpty)
+              SizedBox(
+                height: 100,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: widget.prices.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (_, i) => SizedBox(
+                    width: 160,
+                    child: PriceCard(price: widget.prices[i]),
+                  ),
+                ),
+              ),
+
+            if (widget.prices.isNotEmpty) const SizedBox(height: 20),
+
+            if (widget.addresses.isNotEmpty)
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
-                  Row(
-                    children: [
-                      Icon(
-                          Icons.location_on_outlined,
-                          color: iconColor, size: 20
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          directionName,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                            fontWeight: FontWeight.w700,
+                  InkWell(
+                    onTap: () => setState(() => _addressesExpanded = !_addressesExpanded),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Показать',
+                          style: TextStyle(
+                            color: secondaryTextColor,
                             fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                    ],
+                        const Spacer(),
+                        Icon(
+                          _addressesExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          color: secondaryTextColor,
+                        ),
+                      ],
+                    ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // Prices
-                  Selector<HomeController, List<dynamic>>(
-                    selector: (_, c) => c.getPricesByDirection(directionId),
-                    builder: (_, prices, __) {
-                      return Column(
-                        children: prices
-                            .map((p) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: PriceCard(price: p),
-                        ))
-                            .toList(),
-                      );
-                    },
-                  ),
-
-                  // Addresses
-                  Selector<HomeController, List<dynamic>>(
-                    selector: (_, c) => c.getAddressesByDirection(directionId),
-                    builder: (_, addresses, __) {
-                      if (addresses.isEmpty) return const SizedBox.shrink();
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Divider(height: 24),
-                          Row(
-                            children: [
-                              Icon(Icons.store_mall_directory_outlined,
-                                  size: 18, color: addressIconColor
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'Адреса выдачи',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          ...addresses.map(
-                                (a) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: AddressCard(address: a),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                  const SizedBox(height: 12),
+                  AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 300),
+                    firstChild: const SizedBox.shrink(),
+                    secondChild: Column(
+                      children: widget.addresses
+                          .map((a) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: AddressCard(address: a),
+                      ))
+                          .toList(),
+                    ),
+                    crossFadeState: _addressesExpanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
                   ),
                 ],
               ),
-            ),
-
-            const SizedBox(width: 12),
-
-            // RIGHT IMAGE
-            // ClipRRect(
-            //   borderRadius: BorderRadius.circular(12),
-            //   child: Image.asset(
-            //     'assets/images/great_w.png',
-            //     width: 50,
-            //     height: 300,
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
           ],
         ),
       ),
     );
   }
-}
+  }

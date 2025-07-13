@@ -42,6 +42,46 @@ class OrdersController {
     }
   }
 
+  Future<bool> deleteOrder({
+    required BuildContext context,
+    required int orderId,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final userJson = prefs.getString('user');
+    final userMap = jsonDecode(userJson!);
+    final userId = userMap['id'];
+
+    if (token == null || userId == null) return false;
+
+    try {
+      final response = await http.delete(
+        Uri.parse(ApiUrls.deleteOrder),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'order_id': orderId,
+          'user_id': userId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint('Ошибка удаления: ${response.body}');
+        return false;
+      }
+    } on SocketException {
+      _showNetworkErrorDialog(context, () {
+        Navigator.of(context).pop();
+      });
+      return false;
+    }
+  }
+
   void _showNetworkErrorDialog(BuildContext context, VoidCallback onRetry) {
     showDialog(
       context: context,

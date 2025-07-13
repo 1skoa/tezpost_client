@@ -223,6 +223,52 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   Text('Доставка: ${order.shippingName}'),
                                   Text('Дата: ${order.createdAt}'),
                                   const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton.icon(
+                                        onPressed: () async {
+                                          final confirmed = await showDialog<bool>(
+                                            context: context,
+                                            builder: (_) => AlertDialog(
+                                              title: const Text('Удаление'),
+                                              content: const Text('Вы уверены, что хотите удалить заказ?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context, false),
+                                                  child: const Text('Отмена'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () => Navigator.pop(context, true),
+                                                  child: const Text('Удалить'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+
+                                          if (confirmed != true) return;
+
+                                          final success = await controller.deleteOrder(
+                                            context: context,
+                                            orderId: order.id,
+                                          );
+
+                                          if (success) {
+                                            setState(() {
+                                              _loadOrders();
+                                            });
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Ошибка при удалении')),
+                                            );
+                                          }
+                                        },
+                                        icon: const Icon(Icons.delete, color: Colors.red),
+                                        label: const Text('Удалить', style: TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
                                   DeliveryProgressWidget(
                                       currentStatusName: order.statusName),
                                 ],
