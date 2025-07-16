@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tezpost_client/controllers/home_controller.dart';
 import 'package:tezpost_client/models/menu_item.dart';
+import 'package:tezpost_client/screens/prices_screen.dart';
 import 'package:tezpost_client/screens/warehouse_address_screen.dart';
+import 'package:tezpost_client/screens/warehousetj_address_screen.dart';
 import 'package:tezpost_client/theme/app_theme.dart';
 import 'package:tezpost_client/widgets/menu_card.dart';
 import 'package:tezpost_client/widgets/order_result.dart';
 import 'package:tezpost_client/widgets/search_field.dart';
 import 'package:tezpost_client/widgets/title_widget.dart';
-import 'package:tezpost_client/widgets/direction_list.dart';
 
 class ContentLayer extends StatelessWidget {
   const ContentLayer({super.key});
@@ -37,27 +38,41 @@ class ContentLayer extends StatelessWidget {
         imageAsset: 'assets/images/addresses-tj.png',
         lightColor: const Color(0xFFFFD7D0),
         darkColor: const Color(0xFF3E2723),
-        onTap: () {},
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => const WarehouseTjAddressScreen(),
+          );
+        },
       ),
       MenuItem(
         title: 'Цены',
         imageAsset: 'assets/images/price.png',
-        lightColor: const Color(0xFFE0FFD0),
+        lightColor: const Color(0xFFD3FFBD),
         darkColor: const Color(0xFF1B3E1B),
-        onTap: () {},
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => const PricesScreen(isDark: false),
+          );
+        },
       ),
       MenuItem(
         title: 'Операторы',
         imageAsset: 'assets/images/operator.png',
 
-        lightColor: const Color(0xFFFFF6D0),
+        lightColor: const Color(0xFFFFF6C1),
         darkColor: const Color(0xFF3E3E1E),
         onTap: () {},
       ),
       MenuItem(
         title: 'VIP заказ',
         imageAsset: 'assets/images/vip.png',
-        lightColor: const Color(0xFFD0FFFD),
+        lightColor: const Color(0xFFC1FFFD),
         darkColor: const Color(0xFF004D40),
         onTap: () {},
       ),

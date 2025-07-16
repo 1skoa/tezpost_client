@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:tezpost_client/api/api_service.dart';
 import 'package:tezpost_client/utils/constants.dart';
+import 'package:tezpost_client/widgets/city_chips.dart';
 import 'package:tezpost_client/widgets/direction_list.dart';
+import 'package:tezpost_client/widgets/map_view.dart';
 import 'package:tezpost_client/widgets/shipping_chips.dart';
 
-class WarehouseAddressScreen extends StatefulWidget {
-  const WarehouseAddressScreen({super.key});
+class WarehouseTjAddressScreen extends StatefulWidget {
+  const WarehouseTjAddressScreen({super.key});
 
   @override
-  State<WarehouseAddressScreen> createState() => _WarehouseAddressScreenState();
+  State<WarehouseTjAddressScreen> createState() => _WarehouseTjAddressScreen();
 }
 
-class _WarehouseAddressScreenState extends State<WarehouseAddressScreen> {
-  int selectedId = 1;
-  bool isCity = false;
+class _WarehouseTjAddressScreen extends State<WarehouseTjAddressScreen> {
+  int selectedId = 4;
+  bool isCity = true;
   Map<int, String> directions = {};
   Map<int, List<dynamic>> pricesMap = {};
   Map<int, List<dynamic>> addressesMap = {};
@@ -24,10 +26,10 @@ class _WarehouseAddressScreenState extends State<WarehouseAddressScreen> {
     super.initState();
     _fetchData(selectedId, isCity);
   }
-  Future<void> _fetchData(int shippingId, city) async {
+  Future<void> _fetchData(int cityId, city) async {
     setState(() => isLoading = true);
     try {
-      final addresses = await ApiService.fetchAddressesByShippingId(shippingId, city);
+      final addresses = await ApiService.fetchAddressesByShippingId(cityId, city);
 
       final grouped = _groupByDirection(addresses);
       final newDirections = <int, String>{};
@@ -88,7 +90,7 @@ class _WarehouseAddressScreenState extends State<WarehouseAddressScreen> {
                 ),
               ),
               const SizedBox(height: 4),
-              ShippingChips(
+              CityChips(
                 selectedId: selectedId,
                 onChanged: (id) {
                   setState(() {

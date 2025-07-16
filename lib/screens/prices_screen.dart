@@ -1,79 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:tezpost_client/api/api_service.dart';
+import 'package:tezpost_client/models/price_model.dart';
 import 'package:tezpost_client/utils/constants.dart';
-import 'package:tezpost_client/widgets/direction_list.dart';
+import 'package:tezpost_client/widgets/price_card_widget.dart';
 import 'package:tezpost_client/widgets/shipping_chips.dart';
 
-class WarehouseAddressScreen extends StatefulWidget {
-  const WarehouseAddressScreen({super.key});
+class PricesScreen extends StatefulWidget {
+  final bool isDark;
+
+  const PricesScreen({super.key, required this.isDark});
 
   @override
-  State<WarehouseAddressScreen> createState() => _WarehouseAddressScreenState();
+  State<PricesScreen> createState() => _PricesScreenState();
 }
 
-class _WarehouseAddressScreenState extends State<WarehouseAddressScreen> {
+class _PricesScreenState extends State<PricesScreen> {
   int selectedId = 1;
-  bool isCity = false;
-  Map<int, String> directions = {};
-  Map<int, List<dynamic>> pricesMap = {};
-  Map<int, List<dynamic>> addressesMap = {};
+  List<PriceModel> prices = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchData(selectedId, isCity);
+    _fetchPrices();
   }
-  Future<void> _fetchData(int shippingId, city) async {
+
+  Future<void> _fetchPrices() async {
     setState(() => isLoading = true);
     try {
-      final addresses = await ApiService.fetchAddressesByShippingId(shippingId, city);
-
-      final grouped = _groupByDirection(addresses);
-      final newDirections = <int, String>{};
-
-      for (var dirId in grouped.keys) {
-        newDirections[dirId] = staticDirections[dirId] ?? 'Неизвестно';
-      }
+      final fetchedPrices = await ApiService.fetchPrices(selectedId);
       setState(() {
-        addressesMap = grouped;
-        directions = newDirections;
+        prices = fetchedPrices;
         isLoading = false;
       });
     } catch (e) {
+      print('Ошибка при загрузке цен: $e');
       setState(() => isLoading = false);
-      print('Ошибка загрузки адресов: $e');
     }
-  }
-  Map<int, List<dynamic>> _groupByDirection(List<dynamic> addresses) {
-    final map = <int, List<dynamic>>{};
-    for (var addr in addresses) {
-      final int directionId = addr.directionId;
-      map.putIfAbsent(directionId, () => []).add(addr);
-    }
-    return map;
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.85,
       maxChildSize: 0.95,
       minChildSize: 0.5,
-      builder: (context, scrollController) {
+      builder: (_, scrollController) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: colorScheme.background,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
@@ -87,33 +68,30 @@ class _WarehouseAddressScreenState extends State<WarehouseAddressScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
               ShippingChips(
                 selectedId: selectedId,
                 onChanged: (id) {
-                  setState(() {
-                    selectedId = id;
-                  });
-                  _fetchData(id, isCity);
+                  setState(() => selectedId = id);
+                  _fetchPrices();
                 },
               ),
               const SizedBox(height: 12),
               Text(
-                'Адреса складов',
+                'Цены на доставку',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),
               Expanded(
-                child: SingleChildScrollView(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
                   controller: scrollController,
-                  child: DirectionList(
-                    selectedId: selectedId,
-                    directions: directions,
-                    pricesMap: pricesMap,
-                    addressesMap: addressesMap,
-                    isDark: isDark,
+                  itemCount: prices.length,
+                  itemBuilder: (_, i) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: PriceCard(price: prices[i]),
                   ),
                 ),
               ),

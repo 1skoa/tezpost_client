@@ -25,7 +25,7 @@ class DirectionCard extends StatefulWidget {
 }
 
 class _DirectionCardState extends State<DirectionCard> {
-  bool _addressesExpanded = false;
+  bool _addressesExpanded = true;
 
   @override
   Widget build(BuildContext context) {

@@ -8,22 +8,6 @@ import '../models/address_model.dart';
 
 
 class ApiService {
-  static Future<OrderModel?> fetchOrderByTrackCode(String trackCode) async {
-    final url = Uri.parse('${ApiUrls.findOrder}?data=$trackCode');
-
-    final response = await http.get(url);
-
-    print('🔍 Запрос: $url');
-    print('📦 Статус: ${response.statusCode}');
-    print('📨 Ответ: ${response.body}');
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return OrderModel.fromJson(data);
-    } else {
-      return null;
-    }
-  }
 
   static Future<List<PriceModel>> fetchPrices(int shippingId) async {
     final url = Uri.parse("${ApiUrls.prices}?shipping_id=$shippingId");
@@ -42,9 +26,29 @@ class ApiService {
     }
   }
 
-  static Future<List<AddressModel>> fetchAddressesByShippingId(int shippingId) async {
-    final url = Uri.parse("${ApiUrls.addresses}?shipping_id=$shippingId");
+  static Future<OrderModel?> fetchOrderByTrackCode(String trackCode) async {
+    final url = Uri.parse('${ApiUrls.findOrder}?data=$trackCode');
 
+    final response = await http.get(url);
+
+    print('🔍 Запрос: $url');
+    print('📦 Статус: ${response.statusCode}');
+    print('📨 Ответ: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return OrderModel.fromJson(data);
+    } else {
+      return null;
+    }
+  }
+
+
+
+  static Future<List<AddressModel>> fetchAddressesByShippingId(int id, city) async {
+    final Uri url = city
+        ? Uri.parse("${ApiUrls.addresses}?shipping_id=3&direction_id=$id")
+        : Uri.parse("${ApiUrls.addresses}?shipping_id=$id");
     final response = await http.get(
       url,
       headers: {

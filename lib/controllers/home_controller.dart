@@ -10,6 +10,7 @@ class HomeController extends ChangeNotifier {
   OrderModel? order;
   bool isOrderLoading = false;
   bool hasSearched = false;
+  bool isCity = false;
 
   int selectedShippingId = 1;
   bool isPricesLoading = false;
@@ -52,7 +53,7 @@ class HomeController extends ChangeNotifier {
     }
 
     final prices = await ApiService.fetchPrices(shippingId);
-    final addresses = await ApiService.fetchAddressesByShippingId(shippingId);
+    final addresses = await ApiService.fetchAddressesByShippingId(shippingId, isCity);
 
     _cachedPrices[shippingId] = prices;
     _cachedAddresses[shippingId] = addresses;
