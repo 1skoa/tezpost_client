@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tezpost_client/models/operator_model.dart';
 import 'package:tezpost_client/models/order_model.dart';
 import 'package:tezpost_client/models/price_model.dart';
 import 'package:tezpost_client/utils/urls.dart';
@@ -26,6 +27,25 @@ class ApiService {
     }
   }
 
+  static Future<List<OperatorModel>> fetchOperators(int shippingId) async {
+    final url = Uri.parse(ApiUrls.operators);
+
+    final response = await http.get(url);
+
+    print('🔍 Запрос: $url');
+    print('📦 Статус: ${response.statusCode}');
+    print('📨 Ответ: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      final List<dynamic> data = jsonResponse['operators']; // 👈 ключ здесь
+
+      return data.map((e) => OperatorModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Ошибка загрузки операторов');
+    }
+  }
   static Future<OrderModel?> fetchOrderByTrackCode(String trackCode) async {
     final url = Uri.parse('${ApiUrls.findOrder}?data=$trackCode');
 

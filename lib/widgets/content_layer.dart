@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tezpost_client/controllers/home_controller.dart';
 import 'package:tezpost_client/models/menu_item.dart';
+import 'package:tezpost_client/screens/operators_screen.dart';
 import 'package:tezpost_client/screens/prices_screen.dart';
 import 'package:tezpost_client/screens/warehouse_address_screen.dart';
 import 'package:tezpost_client/screens/warehousetj_address_screen.dart';
@@ -57,17 +58,23 @@ class ContentLayer extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            builder: (_) => const PricesScreen(isDark: false),
+            builder: (_) => const PricesScreen(),
           );
         },
       ),
       MenuItem(
         title: 'Операторы',
         imageAsset: 'assets/images/operator.png',
-
         lightColor: const Color(0xFFFFF6C1),
         darkColor: const Color(0xFF3E3E1E),
-        onTap: () {},
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => const OperatorsScreen(),
+          );
+        },
       ),
       MenuItem(
         title: 'VIP заказ',

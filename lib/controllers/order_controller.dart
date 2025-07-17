@@ -24,9 +24,13 @@ class OrdersController {
         },
       );
 
+      print('🔍 Запрос: ${ApiUrls.getOrders}');
+      print('📦 Статус: ${response.statusCode}');
+      print('📨 Ответ: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List ordersJson = data['orders'] ?? [];
+        final List ordersJson = data['data'] ?? [];
         return ordersJson.map((json) => MyOrderModel.fromJson(json)).toList();
       } else if (response.statusCode == 401) {
         return null;

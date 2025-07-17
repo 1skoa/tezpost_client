@@ -46,6 +46,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   void _loadOrders() {
+    print('📞 _loadOrders called');
     _futureOrders = controller.fetchOrders(context);
   }
 

@@ -6,9 +6,8 @@ import 'package:tezpost_client/widgets/price_card_widget.dart';
 import 'package:tezpost_client/widgets/shipping_chips.dart';
 
 class PricesScreen extends StatefulWidget {
-  final bool isDark;
 
-  const PricesScreen({super.key, required this.isDark});
+  const PricesScreen({super.key});
 
   @override
   State<PricesScreen> createState() => _PricesScreenState();

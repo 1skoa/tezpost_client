@@ -25,7 +25,12 @@ class _MainScreenState extends State<MainScreen> {
 
     _homeController = HomeController();
     _homeController.loadAllData();
-    _listener = () => setState(() {});
+
+    _listener = () {
+      if (!mounted) return;
+      setState(() {});
+    };
+
     _screens = [
       ChangeNotifierProvider(
         create: (_) => _homeController,
@@ -35,9 +40,7 @@ class _MainScreenState extends State<MainScreen> {
       const ProfileScreen(),
     ];
 
-    MainScreen.selectedIndexNotifier.addListener(() {
-      setState(() {});
-    });
+    MainScreen.selectedIndexNotifier.addListener(_listener);
   }
 
   @override

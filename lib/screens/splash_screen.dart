@@ -80,10 +80,17 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         'Tezpost',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color(0xFFFF7A33),
+                          color: Color(0xFFFF7A33), // основной цвет текста
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 70.0,
+                              color: Color(0xFFFFFFFF), // цвет свечения (можно чуть светлее)
+                              offset: Offset(0, 2),
+                            ),
+                          ],
                         ),
                       ),
                     ),
